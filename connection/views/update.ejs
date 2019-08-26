@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Update Profile</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		<form method="post" action = "/update_profile">
+			<div class="input-field">
+				<input type="text" name="first_name" id="first_name" value="<%= first_name %>">
+				<label for="first_name">First Name</label>
+			</div>
+			<div class="input-field">
+				<input type="text" name="last_name" id="first_name" value="<%= last_name %>">
+				<label for="last_name">Last Name</label>
+			</div>
+			<input type="submit" value="Update" class="btn">
+		</form>
+	</div>
+</body>
+</html>

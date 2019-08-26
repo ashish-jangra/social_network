@@ -1,0 +1,11 @@
+{
+  "name": "social_network",
+  "version": "1.0.0",
+  "description": "social networking web app in node js, similar to facebook",
+  "main": "connection/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

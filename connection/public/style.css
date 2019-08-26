@@ -1,0 +1,82 @@
+.nav{
+	z-index: 1;
+}
+.post{
+	margin-left: 22%;
+}
+.split-left{
+	z-index: -1;
+	top: 0;
+	width: 22%;
+	position: fixed;
+	height: 100%;
+	background-color: white;
+}
+.split-right{
+	padding-top: 6%;
+	padding-left: 5%;
+	z-index: 0;
+	top: 0;
+	right: 0;
+	width: 33%;
+	position: fixed;
+	height: 100%;
+	background-color: white;
+	padding-left: 1%;
+	padding-right: 1%;
+	border-left: 5px;
+	border-color: red;
+	overflow-y: auto;
+}
+.split-right::-webkit-scrollbar { width: 0 !important }
+.w3-chip{
+	display: inline-block;
+	padding-top: 0;
+  	padding-left: 25px;
+  	height: 50px;
+  	font-size: 16px;
+  	line-height: 50px;
+}
+.w3-chip img{
+	float: left;
+  	margin: 0 10px 0 -25px;
+  	height: 50px;
+  	width: 50px;
+  	border-radius: 50%;
+}
+
+.w3-chip > .title{
+	font-size: 16px;
+  	line-height: 25px;
+}
+
+.card > .card-content{
+	float: left; 
+	padding: 2%
+}
+.empty{
+	height: 20px;
+}
+.secondary-content{
+	cursor: pointer;
+}
+
+.messenger_list > li{
+	width: 100%;
+}
+
+.row > .chats{
+	font-size: 16px;
+  	line-height: 25px;
+}
+
+.collection-item > .header{
+	font-size: 16px;
+  	line-height: 25px;
+}
+a{
+	cursor: pointer;
+}
+button{
+	margin-left: 5px;
+}

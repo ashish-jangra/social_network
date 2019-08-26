@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<div class="navbar-fixed">
+		<nav class="nav-wrapper green">
+	    	<a href="#" data-target="slide-out" class="sidenav-trigger show-on-medium-and-up"><i class="material-icons">menu</i></a>
+	      	<div class="">
+	      		<a style="margin-left: 30px" href="/" class="left"><h5>CodeHub</h5></a>
+		      	<ul class="right" style="padding-right: 20px;">
+		      		<li class="hide-on-small-only" style="margin-right: 8px">
+		      			<i class="material-icons">search</i>
+		      		</li>
+		      		<li class="hide-on-small-only">
+		      			<input type="text" placeholder="search" id="autocomplete-input" class="autocomplete white-text" >
+		      		</li>
+		      		<li class="hide-on-med-and-down">
+		      			<a href="/update">
+		      				<div class="w3-chip">
+		      					<img src="img_avatar.png">
+		      					<%=session.first_name%>
+		      				</div>
+		      			</a>
+		      		</li>
+		      	</ul>
+	      	</div>
+	  	</nav>
+	</div>
+	<ul id="slide-out" class="sidenav">
+	    <li>
+	    	<div class="user-view">
+	      		<div class="background green">
+	      	</div>
+	      	<a href="#user"><img class="circle" src="img_avatar.png"></a>
+	      	<a href="#name"><span class="white-text name"><%= session.first_name%> <%=session.last_name%></span></a>
+	    	</div>
+	    </li>
+	    <li>
+	    	<a onclick="handleSideNav(event)" id="chats">
+	    		<i class="material-icons">question_answer</i>
+	    		Chat
+	    	</a>
+	    </li>
+	    <li>
+	    	<a onclick="handleSideNav(event)" id="notifications">
+	    		<i class="material-icons">notifications</i>
+	    		Notifications
+	    	</a>
+	    </li>
+	    <li>
+	    	<a onclick="handleSideNav(event)" id="friends">
+	    		<i class="material-icons">people</i>
+	    		Friends
+	    	</a>
+	    </li>
+	    <li>
+	    	<div class="divider"></div>
+	    </li>
+	    <li>
+	    	<a onclick="handleSideNav(event)" id="settings">
+	    		<i class="material-icons">settings</i>
+	    		Settings
+	    	</a>
+	    </li>
+	    <li>
+	    	<a class="waves-effect" href="/logout">
+	    		<i class="material-icons">close</i>
+	    		Logout
+	    	</a>
+	    </li>
+	</ul>
+  	<div class="grey lighten-2" id="post_container">
+  		<div class="row">
+  			<div class="col l2 m2 s2" style="position: fixed; top: 0; bottom: 0">
+  				Hello world
+  			</div>
+  			<div class="col offset-l2 offset-m2 offset-s2 l6 m6 s6 center">
+		  		<div class="card">
+		  			<div class="card-content">
+		  				<div class="collection-item w3-chip">
+						  	<img src="img_avatar.png" alt="Person" class="circle">
+						  	<span class="">
+						  		Ashish Jangra
+						  	</span>
+						</div>
+		  			</div>
+		  			<div class="card-image">
+		  				<img src="img_avatar.png">
+		  			</div>
+		  			<div class="card-tabs">
+				      	<ul class="tabs tabs-fixed-width">
+				        	<li class="tab"><a href="#test4">Like</a></li>
+				        	<li class="tab"><a class="active" href="#test5">Comment</a></li>
+				        	<li class="tab"><a href="#test6">Share</a></li>
+				      	</ul>
+		    		</div>
+		  		</div>
+		  		<div class="card">
+		  			<div class="card-content">
+		  				<div class="collection-item w3-chip">
+						  	<img src="img_avatar.png" alt="Person" class="circle">
+						  	<span class="">
+						  		Ashish Jangra
+						  	</span>
+						</div>
+		  			</div>
+		  			<div class="card-image">
+		  				<img src="img_avatar.png">
+		  			</div>
+		  			<div class="card-tabs">
+				      	<ul class="tabs tabs-fixed-width">
+				        	<li class="tab"><a href="#test4">Like</a></li>
+				        	<li class="tab"><a class="active" href="#test5">Comment</a></li>
+				        	<li class="tab"><a href="#test6">Share</a></li>
+				      	</ul>
+		    		</div>
+		  		</div>
+		  		<div class="card">
+		  			<div class="card-content">
+		  				<div class="collection-item w3-chip">
+						  	<img src="img_avatar.png" alt="Person" class="circle">
+						  	<span class="">
+						  		Ashish Jangra
+						  	</span>
+						</div>
+		  			</div>
+		  			<div class="card-image">
+		  				<img src="img_avatar.png">
+		  			</div>
+		  			<div class="card-tabs">
+				      	<ul class="tabs tabs-fixed-width">
+				        	<li class="tab"><a href="#test4">Like</a></li>
+				        	<li class="tab"><a class="active" href="#test5">Comment</a></li>
+				        	<li class="tab"><a href="#test6">Share</a></li>
+				      	</ul>
+		    		</div>
+		  		</div>
+		  	</div>
+		  	<div id="sideProps" class="col l4 m4 s4" style="position: fixed; top: 0; padding-top: 65px; bottom: 0; right: 0">
+		  		<ul class="messenger_list" id="showchats">
+		  			<li class="w3-chip">
+		  				<div class="row">
+		  					<div class="col l10 m10 s10 hide-on-small-only">
+				  				<img src="img_avatar.png" class="circle">
+				  				<span class=""> CHATS </span>
+				  			</div>
+				  			<div class="col l2 m2 s2">
+				  				<i class="material-icons">settings</i>
+				  			</div>
+			  			</div>
+		  			</li>
+		  			<li class="hide-on-small-only">
+		  				<div class="input-field">
+		  					<i class="material-icons prefix black-text">search</i>
+		  					<input class="" type="text" placeholder="search messenger">
+		  				</div>
+		  			</li>
+		  			<li class="w3-chip">
+		  				<div class="row">
+		  					<div class="col l1 m1 s1">
+		  						<img src="img_avatar.png" class="circle">
+		  					</div>
+		  					<div class="col l11 m11 s11 chats hide-on-med-and-down">
+		  						<b>Saurabh</b> <br> <span style="white-space: pre">  hello bro</span>
+		  					</div>
+		  				</div>
+		  			</li>
+		  		</ul>
+		  	</div>
+	  	</div>
+  	</div>
+</body>
+<script type="text/javascript">
+	var session = {
+		user_id: "<%= session.user_id%>",
+		first_name: "<%= session.first_name %>",
+		last_name: "<%= session.last_name %>"
+	}
+</script>
+<script type="text/javascript" src="script.js">
+</script>
+</html>

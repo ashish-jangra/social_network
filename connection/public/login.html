@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Welcome</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            
+</head>
+<body>
+	<div class="container">
+	    <div class="row">
+	        <div class="col m6">
+	            <h2 class="center-align">Login</h2>
+	            <div class="row">
+	                <form class="col s12" method="POST">
+	                    <div class="row">
+	                        <div class="input-field col s12">
+	                            <input id="email" type="email" class="validate" name="username">
+	                            <label for="email">Email</label>
+	                        </div>
+	                    </div>
+	                    <div class="row">
+	                        <div class="input-field col s12">
+	                            <input id="pass" type="password" class="validate" name="password">
+	                            <label for="pass">Password</label>
+	                        </div>
+	                    </div>
+	                    <div class="row">
+	                        <div class="col l6 s12">
+	                            
+	                                <label for="remember">
+	                                	<input id="remember" type="checkbox" class="filled-in" />
+	                                	<span>Remember me</span>
+	                            	</label>
+	                         
+	                        </div>
+	                        
+	                    </div>
+	                    <div class="row">
+	                    	<div class="right-align">
+	                        	<button class="right-align btn btn-large waves-effect waves-light" onclick="handleLogin()">Login</button>
+	                        	<button class="right-align btn btn-large waves-effect waves-light" onclick="handleSignup()">Signup</button>
+	                        </div>
+	                    </div>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+</body>
+<script type="text/javascript">
+	const form = document.getElementsByTagName('form')[0];
+	function handleLogin(){
+		form.action = "/login";
+		form.submit();
+	}
+	function handleSignup(){
+		form.action ="/signup";
+		form.submit();
+	}
+</script>
+</html>

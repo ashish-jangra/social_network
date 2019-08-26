@@ -76,12 +76,12 @@
 	    	</a>
 	    </li>
 	</ul>
-  	<div class="grey lighten-2" id="post_container">
+  	<div>
   		<div class="row">
   			<div class="col l2 m2 s2" style="position: fixed; top: 0; bottom: 0">
   				Hello world
   			</div>
-  			<div class="col offset-l2 offset-m2 offset-s2 l6 m6 s6 center">
+  			<div class="col offset-l2 offset-m2 offset-s2 l6 m6 s6" id="post_container">
 		  		<div class="card">
 		  			<div class="card-content">
 		  				<div class="collection-item w3-chip">
@@ -147,9 +147,16 @@
 		  		<ul class="messenger_list" id="showchats">
 		  			<li class="w3-chip">
 		  				<div class="row">
-		  					<div class="col l10 m10 s10 hide-on-small-only">
+		  					<div class="col l10 m10 s10 hide-on-small-only"  onclick="showchatlist()">
 				  				<img src="img_avatar.png" class="circle">
-				  				<span class=""> CHATS </span>
+				  				<span>
+				  					<%if(session.chats.length>0){%>
+				  						CHATS
+				  					<%}%>
+				  					<%if(session.chats.length == 0){%>
+				  						CONTACTS
+				  					<%}%>
+				  				</span>
 				  			</div>
 				  			<div class="col l2 m2 s2">
 				  				<i class="material-icons">settings</i>
@@ -162,16 +169,40 @@
 		  					<input class="" type="text" placeholder="search messenger">
 		  				</div>
 		  			</li>
-		  			<li class="w3-chip">
-		  				<div class="row">
-		  					<div class="col l1 m1 s1">
-		  						<img src="img_avatar.png" class="circle">
-		  					</div>
-		  					<div class="col l11 m11 s11 chats hide-on-med-and-down">
-		  						<b>Saurabh</b> <br> <span style="white-space: pre">  hello bro</span>
-		  					</div>
-		  				</div>
-		  			</li>
+		  			<div id="chat_list">
+			  			<%if(session.chats.length > 0){%>
+			  				<%session.chats.forEach((item,index)=>{%>
+					  			<li class="w3-chip" onclick="getMessages(event)" id="<%=item.user_id%>">
+					  				<div class="row" id="<%=item.user_id%>">
+					  					<div class="col l1 m1 s1" id="<%=item.user_id%>">
+					  						<img src="img_avatar.png" class="circle" id="<%=item.user_id%>">
+					  					</div>
+					  					<div class="col l11 m11 s11 chats hide-on-med-and-down" id="<%=item.user_id%>">
+					  						<b><%=item.first_name%> <%=item.last_name%></b> <br> <%=item.last_msg%>
+					  						<span style="white-space: pre">
+					  						</span>
+					  					</div>
+					  				</div>
+					  			</li>
+			  				<%})%>
+			  			<%}%>
+			  			<%if(session.chats.length == 0){%>
+			  				<%session.friends.forEach((item, index)=>{%>
+			  					<li class="w3-chip" onclick="getMessages(event)" id="<%=item.user_id%>">
+					  				<div class="row" id="<%=item.user_id%>">
+					  					<div class="col l1 m1 s1"  id="<%=item.user_id%>">
+					  						<img src="img_avatar.png" class="circle"  id="<%=item.user_id%>">
+					  					</div>
+					  					<div class="col l11 m11 s11 chats hide-on-med-and-down"  id="<%=item.user_id%>">
+					  						<b><%=item.first_name%>  <%=item.last_name%></b> <br> Open up chats
+					  						<span style="white-space: pre">
+					  						</span>
+					  					</div>
+					  				</div>
+					  			</li>
+			  				<%})%>
+			  			<%}%>
+			  		</div>
 		  		</ul>
 		  	</div>
 	  	</div>

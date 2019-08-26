@@ -92,7 +92,7 @@ app.post('/login', function(req,res){
 	let username = req.body.username;
 	let plain_password = req.body.password;
 	console.log(plain_password);
-	User.findOne({username: username}).then(function(result){
+	User.findOne({username: username}).sort({"chats.last_chat_at": -1}).then(function(result){
 		//console.log("query result",result.password);
 		if(!result){
 			res.redirect('/');
@@ -103,7 +103,9 @@ app.post('/login', function(req,res){
 				req.session.user = {
 					user_id: result.id,
 					first_name: result.first_name || "update_profile",
-					last_name: result.last_name || ""
+					last_name: result.last_name || "",
+					chats: result.chats || [],
+					friends: result.friends || []
 				};
 				res.render("home", {session: req.session.user});
 			}
@@ -154,11 +156,18 @@ app.get('/logout', function(req,res){
 });
 
 const socket = WebSocket(server);
+connections = {};
 
 socket.on('connection', function(clientSocket){
+	handshakeData = clientSocket.request._query;
+	if(!handshakeData){
+		console.log('Invalid socket connection');
+		clientSocket.disconnect();
+	}
+	connections[handshakeData.user_id] = clientSocket.id;
 	console.log("made connection");
 	clientSocket.on('globalSearch', function(data){
-		console.log("search for", data.query);
+		console.log("search from", clientSocket.user_id);
 		User.find({
 			first_name: {$regex: data.query, $options: "$i"}
 		},
@@ -172,7 +181,7 @@ socket.on('connection', function(clientSocket){
 				throw err;
 			}
 			console.log("result",result);
-			socket.emit('globalSearchResult',{users: result});
+			socket.to(clientSocket.id).emit('globalSearchResult',{users: result});
 		});
 	});
 	clientSocket.on('sendFriendRequest', function(data){
@@ -185,8 +194,6 @@ socket.on('connection', function(clientSocket){
 			}
 			else{
 				console.log("found correct user");
-				first_name = result.first_name;
-				last_name = result.last_name;
 				let friend_requests = result.friend_requests;
 				let i=0;
 				for(i=0;i<friend_requests.length;i++){
@@ -196,47 +203,48 @@ socket.on('connection', function(clientSocket){
 					}
 				}
 				if(i == friend_requests.length){
+					first_name = result.first_name;
+					last_name = result.last_name;
+					console.log("request to", first_name, last_name);
 					result.friend_requests = [{friend_id: data.from, first_name: data.first_name, last_name: data.last_name, pending: true} , ...result.friend_requests];
-					socket.emit('newFriendRequest', {
+					socket.to(clientSocket.id).emit('newFriendRequest', {
 						from: data.from,
 						first_name: data.first_name,
 						last_name: data.last_name
 					});
 					result.save().then(function(data){
 						console.log("sent friend_request successfully");
-						socket.emit('sentFriendRequest');
+						socket.to(clientSocket.id).emit('sentFriendRequest');
 					}).catch(function(err){
 						first_name = "";
 						console.log("can't add sendFriendRequest");
 						throw err;
 					});
+					console.log("adding request to own");
+					User.findById(data.from, {"friend_requests": 1}, function(err,result){
+						if(err){
+							console.log("cant add request to own list");
+							throw err;
+						}
+						newFriendRequest = {
+							friend_id: data.to,
+							first_name: first_name,
+							last_name: last_name,
+							sent: true
+						};
+						result.friend_requests = [...result.friend_requests, newFriendRequest];
+						result.save().then(function(){
+							console.log("saved request to own list: ",result);
+						}).catch(function(){
+							console.log("cant save request to own list");
+						});
+					});
 				}
 				else{
-					first_name = "";
 					console.log("friend request already sent");
 				}
 			}
 		});
-		if(first_name != ""){
-			User.findById(data.from, {"friend_requests": 1}, function(err,result){
-				if(err){
-					console.log("cant add request to own list");
-					throw err;
-				}
-				newFriendRequest = {
-					friend_id: data.to,
-					first_name: first_name,
-					last_name: last_name,
-					sent: true
-				};
-				result.friend_requests = [...result.friend_requests, newFriendRequest];
-				result.save().then(function(){
-					console.log("saved request to own list");
-				}).catch(function(){
-					console.log("cant save request to own list");
-				});
-			});
-		}
 	});
 	clientSocket.on('shownotifications', function(data){
 		User.findById(data.user_id,{"notifications": 1},function(err,result){
@@ -255,7 +263,7 @@ socket.on('connection', function(clientSocket){
 				throw err;
 			}
 			//console.log(result);
-			socket.emit('friend_list_response',result);
+			socket.to(clientSocket.id).emit('friend_list_response',result);
 		});
 	});
 	clientSocket.on('deleteFriendRequest', function(data){
@@ -338,5 +346,97 @@ socket.on('connection', function(clientSocket){
 				});
 			}
 		});
+	});
+	clientSocket.on('getMessages', function(data){
+		console.log("fetch messages");
+		User.findById(data.user_id, {"chats": 1}, function(err,result){
+			if(err){
+				console.log('error finding user for fetching messages');
+				throw err;
+			}
+			let messages = [];
+			result.chats.forEach((item, index)=>{
+				if(item.user_id == data.friend_id){
+					messages = item.messages;
+				}
+			});
+			socket.to(clientSocket.id).emit('displayMessages',{friend_id: data.friend_id ,messages: messages});
+		});
+	});
+	clientSocket.on('sendMessage', function(data){
+		if(connections[data.to]){
+			socket.to(`${connections[data.to]}`).emit('receiveMessage',data);
+		}
+		User.findById(data.to, function(err,result){
+			if(err){
+				console.log("error adding msg to db");
+				throw err;
+			}
+			let new_msg = {
+				me: false,
+				message: data.message
+				// when: Date()
+			}
+			let i=0;
+			for(i=0;i<result.chats.length;i++){
+				let chat = result.chats[i];
+				if(chat.user_id == data.from){
+					chat.last_msg = data.message;
+					chat.messages = [...chat.messages, new_msg];
+					result.chats[i] = chat;
+					break;
+				}
+			}
+			if(i == result.chats.length){
+				let new_chat = {
+					user_id: data.from,
+					last_msg: data.message,
+					messages: [new_msg],
+					first_name: handshakeData.first_name,
+					last_name: handshakeData.last_name
+					//last_chat_at: Date()
+				}
+				result.chats = new_chat;
+			}
+			result.save().then(function(friend){
+				User.findById(data.from, function(err,result){
+					if(err){
+						console.log("error adding msg to db");
+						throw err;
+					}
+					let new_msg = {
+						me: true,
+						message: data.message
+						// when: Date()
+					}
+					let i=0;
+					for(i=0;i<result.chats.length;i++){
+						let chat = result.chats[i];
+						if(chat.user_id == data.to){
+							chat.last_msg = data.message;
+							chat.messages = [...chat.messages, new_msg];
+							result.chats[i] = chat;
+							break;
+						}
+					}
+					if(i == result.chats.length){
+						let new_chat = {
+							user_id: data.to,
+							last_msg: data.message,
+							messages: [new_msg],
+							first_name: friend.first_name,
+							last_name: friend.last_name
+							//last_chat_at: Date()
+						}
+						result.chats = new_chat;
+					}
+					result.save();
+				});		
+			}).catch(function(err){
+				console.log("cant save msg to database");
+			});
+		});
+		
+		
 	});
 });

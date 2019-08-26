@@ -27,6 +27,21 @@ const NotificationSchema = new Schema({
 	last_name: String
 },{timestamps: true});
 
+const MessageSchema = new Schema({
+	me: Boolean,
+	message: String,
+	when: Date
+});
+
+const ChatSchema = new Schema({
+	user_id: {type: ObjectId},
+	first_name: {type: String},
+	last_name: {type: String},
+	messages: [MessageSchema],
+	last_chat_at: Date,
+	last_msg: {type: String, default: "Open up chats"}
+});
+
 const UserSchema = new Schema({
 	username: { type: String},
 	password: String,
@@ -35,7 +50,8 @@ const UserSchema = new Schema({
 	friends: [FriendSchema],
 	posts: [PostSchema],
 	friend_requests: [FriendRequestSchema],
-	notifications: [NotificationSchema]
+	notifications: [NotificationSchema],
+	chats: [ChatSchema]
 });
 
 const User = mongoose.model('user', UserSchema);
